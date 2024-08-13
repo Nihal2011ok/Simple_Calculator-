@@ -2,11 +2,14 @@ document.addEventListener("DOMContentLoaded", function() {
     const previousCalc = document.getElementById("previous-calc");
     const display = document.getElementById("current-display");
     const buttons = document.querySelectorAll(".btn");
+    const historyList = document.getElementById("history-list");
+    const clearHistoryBtn = document.getElementById("clear-history");
     let currentInput = "";
     let operator = "";
     let firstValue = "";
     let secondValue = "";
     let resetDisplay = false;
+    let calculationHistory = [];
 
     buttons.forEach(button => {
         button.addEventListener("click", () => {
@@ -22,10 +25,12 @@ document.addEventListener("DOMContentLoaded", function() {
             handleInput(key);
         } else if (key === "Enter" || key === "=") {
             handleInput("=");
-        } else if (key === "Backspace" || key === "Escape") {
+        } else if (key === "Backspace" || key === "Delete") {
             handleInput("C");
         }
     });
+
+    clearHistoryBtn.addEventListener("click", clearHistory);
 
     function handleInput(value) {
         if (value >= "0" && value <= "9" || value === ".") {
@@ -43,12 +48,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 secondValue = currentInput;
                 const result = calculate(parseFloat(firstValue), parseFloat(secondValue), operator);
                 if (result !== "Error") {
-                    previousCalc.textContent = `${firstValue} ${operator} ${secondValue} =`;
+                    const calculation = `${firstValue} ${operator} ${secondValue} = ${result}`;
+                    previousCalc.textContent = calculation;
                     currentInput = result.toString();
                     updateDisplay();
+                    addToHistory(calculation);
                     reset(result);
                 } else {
-                    displayError();
+                    displayError("Math Error");
                 }
             }
         } else {
@@ -60,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         firstValue = result.toString();
                         currentInput = firstValue;
                     } else {
-                        displayError();
+                        displayError("Math Error");
                         return;
                     }
                 } else {
@@ -102,9 +109,9 @@ document.addEventListener("DOMContentLoaded", function() {
         resetDisplay = true;
     }
 
-    function displayError() {
+    function displayError(message) {
         display.classList.add("error");
-        display.textContent = "Error";
+        display.textContent = message;
         setTimeout(() => {
             display.classList.remove("error");
             clearAll();
@@ -113,5 +120,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateDisplay() {
         display.textContent = currentInput || "0";
+    }
+
+    function addToHistory(calculation) {
+        calculationHistory.unshift(calculation);
+        if (calculationHistory.length > 5) {
+            calculationHistory.pop();
+        }
+        updateHistoryDisplay();
+    }
+
+    function updateHistoryDisplay() {
+        historyList.innerHTML = "";
+        calculationHistory.forEach(calc => {
+            const li = document.createElement("li");
+            li.textContent = calc;
+            historyList.appendChild(li);
+        });
+    }
+
+    function clearHistory() {
+        calculationHistory = [];
+        updateHistoryDisplay();
     }
 });
