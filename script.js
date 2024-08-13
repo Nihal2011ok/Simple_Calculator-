@@ -203,7 +203,7 @@ function setTheme(theme) {
     document.body.className = `${theme}-theme`;
 }
 
-// Modify the existing calculate function to include power operation
+
 function calculate(num1, num2, operator) {
     switch (operator) {
         case "+": return num1 + num2;
@@ -215,8 +215,9 @@ function calculate(num1, num2, operator) {
     }
 }
 
-// Modify handleInput function to include error handling for invalid inputs
+
 function handleInput(value) {
+    
     if (value >= "0" && value <= "9" || value === ".") {
         if (resetDisplay) {
             currentInput = "";
@@ -246,11 +247,13 @@ function handleInput(value) {
             }
         }
     } else {
-        // ... (keep the rest of the function as is) ...
+       
     }
+    updateDisplay();
+    updateMemoryDisplay();
 }
 
-// Add a new function to display results from scientific calculations
+
 function displayResult(result) {
     if (isNaN(result) || !isFinite(result)) {
         displayError("Math Error");
@@ -262,5 +265,124 @@ function displayResult(result) {
     }
 }
 
-// Initialize with dark theme
+
 setTheme('dark');
+
+const memoryButtons = document.querySelectorAll('.mem-func');
+const unitFromSelect = document.getElementById('unit-from');
+const unitToSelect = document.getElementById('unit-to');
+const convertBtn = document.getElementById('convert-btn');
+const functionInput = document.getElementById('function-input');
+const plotBtn = document.getElementById('plot-btn');
+const graphCanvas = document.getElementById('graph-canvas');
+const ctx = graphCanvas.getContext('2d');
+
+let memoryValue = 0;
+
+memoryButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        handleMemoryFunction(button.getAttribute('data-value'));
+    });
+});
+
+convertBtn.addEventListener('click', handleUnitConversion);
+plotBtn.addEventListener('click', plotFunction);
+
+function handleMemoryFunction(func) {
+    switch (func) {
+        case 'MC':
+            memoryValue = 0;
+            break;
+        case 'MR':
+            currentInput = memoryValue.toString();
+            updateDisplay();
+            break;
+        case 'M+':
+            memoryValue += parseFloat(currentInput) || 0;
+            break;
+        case 'M-':
+            memoryValue -= parseFloat(currentInput) || 0;
+            break;
+    }
+}
+
+function handleUnitConversion() {
+    const fromUnit = unitFromSelect.value;
+    const toUnit = unitToSelect.value;
+    const value = parseFloat(currentInput);
+
+    if (isNaN(value)) {
+        displayError("Invalid input");
+        return;
+    }
+
+    let result;
+    if (fromUnit === toUnit) {
+        result = value;
+    } else if (fromUnit === 'm' && toUnit === 'ft') {
+        result = value * 3.28084;
+    } else if (fromUnit === 'ft' && toUnit === 'm') {
+        result = value / 3.28084;
+    } else if (fromUnit === 'kg' && toUnit === 'lb') {
+        result = value * 2.20462;
+    } else if (fromUnit === 'lb' && toUnit === 'kg') {
+        result = value / 2.20462;
+    } else {
+        displayError("Unsupported conversion");
+        return;
+    }
+
+    currentInput = result.toFixed(4).toString();
+    updateDisplay();
+    addToHistory(`${value} ${fromUnit} = ${currentInput} ${toUnit}`);
+}
+
+function plotFunction() {
+    const func = functionInput.value;
+    ctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+    ctx.beginPath();
+    ctx.moveTo(0, graphCanvas.height / 2);
+    ctx.lineTo(graphCanvas.width, graphCanvas.height / 2);
+    ctx.moveTo(graphCanvas.width / 2, 0);
+    ctx.lineTo(graphCanvas.width / 2, graphCanvas.height);
+    ctx.strokeStyle = '#666';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = '#4caf50';
+    for (let x = -5; x <= 5; x += 0.1) {
+        let y;
+        try {
+            y = eval(func.replace(/x/g, x));
+        } catch (error) {
+            displayError("Invalid function");
+            return;
+        }
+        const canvasX = (x + 5) * (graphCanvas.width / 10);
+        const canvasY = graphCanvas.height - (y + 5) * (graphCanvas.height / 10);
+        if (x === -5) {
+            ctx.moveTo(canvasX, canvasY);
+        } else {
+            ctx.lineTo(canvasX, canvasY);
+        }
+    }
+    ctx.stroke();
+}
+
+function updateMemoryDisplay() {
+    const memoryIndicator = document.getElementById('memory-indicator');
+    if (!memoryIndicator) {
+        const indicator = document.createElement('div');
+        indicator.id = 'memory-indicator';
+        indicator.style.position = 'absolute';
+        indicator.style.top = '5px';
+        indicator.style.right = '5px';
+        indicator.style.fontSize = '12px';
+        indicator.style.color = '#aaa';
+        document.querySelector('.display').appendChild(indicator);
+    }
+    document.getElementById('memory-indicator').textContent = memoryValue !== 0 ? 'M' : '';
+}
+
+
+updateMemoryDisplay();

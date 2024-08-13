@@ -47,6 +47,27 @@
                 <button class="btn sci-func" data-value="pow">^</button>
                 <button class="btn sci-func" data-value="pi">π</button>
             </div>
+          <div class="memory-buttons">
+                <button class="btn mem-func" data-value="MC">MC</button>
+                <button class="btn mem-func" data-value="MR">MR</button>
+                <button class="btn mem-func" data-value="M+">M+</button>
+                <button class="btn mem-func" data-value="M-">M-</button>
+            </div>
+            <div class="unit-converter">
+                <select id="unit-from">
+                    <option value="m">Meters</option>
+                    <option value="ft">Feet</option>
+                    <option value="kg">Kilograms</option>
+                    <option value="lb">Pounds</option>
+                </select>
+                <select id="unit-to">
+                    <option value="m">Meters</option>
+                    <option value="ft">Feet</option>
+                    <option value="kg">Kilograms</option>
+                    <option value="lb">Pounds</option>
+                </select>
+                <button id="convert-btn">Convert</button>
+            </div>
         </div>
         <div class="side-panel">
             <div class="history-panel">
@@ -61,6 +82,11 @@
                     <option value="light">Light</option>
                     <option value="colorful">Colorful</option>
                 </select>
+            </div>
+          <div class="graph-container">
+                <canvas id="graph-canvas" width="200" height="200"></canvas>
+                <input type="text" id="function-input" placeholder="Enter function (e.g., x^2)">
+                <button id="plot-btn">Plot</button>
             </div>
         </div>
     </div>
