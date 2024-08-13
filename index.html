@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Calculator v2</title>
+    <title>Calculator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -37,11 +37,31 @@
                 
                 <button class="btn equals" id="equals" data-value="=">=</button>
             </div>
+            <div class="scientific-buttons">
+                <button class="btn sci-func" data-value="sin">sin</button>
+                <button class="btn sci-func" data-value="cos">cos</button>
+                <button class="btn sci-func" data-value="tan">tan</button>
+                <button class="btn sci-func" data-value="log">log</button>
+                <button class="btn sci-func" data-value="ln">ln</button>
+                <button class="btn sci-func" data-value="sqrt">√</button>
+                <button class="btn sci-func" data-value="pow">^</button>
+                <button class="btn sci-func" data-value="pi">π</button>
+            </div>
         </div>
-        <div class="history-panel">
-            <h3>Calculation History</h3>
-            <ul id="history-list"></ul>
-            <button id="clear-history">Clear History</button>
+        <div class="side-panel">
+            <div class="history-panel">
+                <h3>Calculation History</h3>
+                <ul id="history-list"></ul>
+                <button id="clear-history">Clear History</button>
+            </div>
+            <div class="theme-switcher">
+                <h3>Theme</h3>
+                <select id="theme-select">
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                    <option value="colorful">Colorful</option>
+                </select>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>

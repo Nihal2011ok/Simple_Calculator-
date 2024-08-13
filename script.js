@@ -144,3 +144,123 @@ document.addEventListener("DOMContentLoaded", function() {
         updateHistoryDisplay();
     }
 });
+
+const scientificButtons = document.querySelectorAll('.sci-func');
+const themeSelect = document.getElementById('theme-select');
+
+scientificButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        handleScientificFunction(button.getAttribute('data-value'));
+    });
+});
+
+themeSelect.addEventListener('change', (e) => {
+    setTheme(e.target.value);
+});
+
+function handleScientificFunction(func) {
+    switch (func) {
+        case 'sin':
+        case 'cos':
+        case 'tan':
+        case 'log':
+        case 'ln':
+        case 'sqrt':
+            if (currentInput) {
+                const num = parseFloat(currentInput);
+                const result = calculateScientific(num, func);
+                displayResult(result);
+            }
+            break;
+        case 'pow':
+            if (currentInput) {
+                firstValue = currentInput;
+                operator = '^';
+                resetDisplay = true;
+                previousCalc.textContent = `${firstValue} ^`;
+            }
+            break;
+        case 'pi':
+            currentInput = Math.PI.toString();
+            updateDisplay();
+            break;
+    }
+}
+
+function calculateScientific(num, func) {
+    switch (func) {
+        case 'sin': return Math.sin(num);
+        case 'cos': return Math.cos(num);
+        case 'tan': return Math.tan(num);
+        case 'log': return Math.log10(num);
+        case 'ln': return Math.log(num);
+        case 'sqrt': return Math.sqrt(num);
+        default: return num;
+    }
+}
+
+function setTheme(theme) {
+    document.body.className = `${theme}-theme`;
+}
+
+// Modify the existing calculate function to include power operation
+function calculate(num1, num2, operator) {
+    switch (operator) {
+        case "+": return num1 + num2;
+        case "-": return num1 - num2;
+        case "*": return num1 * num2;
+        case "/": return num2 === 0 ? "Error" : num1 / num2;
+        case "^": return Math.pow(num1, num2);
+        default: return num2;
+    }
+}
+
+// Modify handleInput function to include error handling for invalid inputs
+function handleInput(value) {
+    if (value >= "0" && value <= "9" || value === ".") {
+        if (resetDisplay) {
+            currentInput = "";
+            resetDisplay = false;
+        }
+        if (value === "." && currentInput.includes(".")) return;
+        currentInput += value;
+        updateDisplay();
+    } else if (value === "C") {
+        clearAll();
+    } else if (value === "=") {
+        if (currentInput && operator && firstValue !== "") {
+            secondValue = currentInput;
+            try {
+                const result = calculate(parseFloat(firstValue), parseFloat(secondValue), operator);
+                if (isNaN(result) || !isFinite(result)) {
+                    throw new Error("Invalid calculation");
+                }
+                const calculation = `${firstValue} ${operator} ${secondValue} = ${result}`;
+                previousCalc.textContent = calculation;
+                currentInput = result.toString();
+                updateDisplay();
+                addToHistory(calculation);
+                reset(result);
+            } catch (error) {
+                displayError("Math Error");
+            }
+        }
+    } else {
+        // ... (keep the rest of the function as is) ...
+    }
+}
+
+// Add a new function to display results from scientific calculations
+function displayResult(result) {
+    if (isNaN(result) || !isFinite(result)) {
+        displayError("Math Error");
+    } else {
+        currentInput = result.toString();
+        updateDisplay();
+        addToHistory(`${previousCalc.textContent} = ${result}`);
+        reset(result);
+    }
+}
+
+// Initialize with dark theme
+setTheme('dark');
